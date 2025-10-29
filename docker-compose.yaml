@@ -4,8 +4,8 @@ services:
     container_name: postgres
     environment:
       POSTGRES_DB: study
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
     ports:
       - "5432:5432"
     volumes:
@@ -25,7 +25,7 @@ services:
       - "8080:80"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
-      - ./servers.json:/pgadmin4/servers.json  # Pre-configured servers
+      - ./servers.json:/pgadmin4/servers.json
     networks:
       - postgres_network
     restart: unless-stopped
