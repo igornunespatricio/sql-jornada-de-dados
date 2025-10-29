@@ -1,0 +1,12 @@
+{
+    "sqltools.connections": [
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "driver": "PostgreSQL",
+            "connectString": "postgresql://user:password@localhost:5432/study",
+            "name": "sql-jornada-de-dados"
+        }
+    ]
+}
