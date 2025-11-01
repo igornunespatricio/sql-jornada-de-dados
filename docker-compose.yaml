@@ -3,7 +3,7 @@ services:
     image: postgres:15
     container_name: postgres
     environment:
-      POSTGRES_DB: study
+      POSTGRES_DB: northwind
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
     ports:
@@ -14,6 +14,26 @@ services:
     networks:
       - postgres_network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d northwind"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  view-initializer:
+    image: alpine:latest
+    container_name: view_initializer
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./views:/views
+      - ./scripts/init_northwind_views.sh:/scripts/init_northwind_views.sh
+    networks:
+      - postgres_network
+    restart: "no"  # Change from "always" to "no"
+    command: ["/bin/sh", "/scripts/init_northwind_views.sh", "--cron"]
 
   pgadmin:
     image: dpage/pgadmin4
