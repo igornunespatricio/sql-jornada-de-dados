@@ -1,7 +1,5 @@
-DROP VIEW IF EXISTS revenue_per_customer;
-
-
-CREATE VIEW revenue_per_customer AS
+CREATE
+OR REPLACE VIEW revenue_per_customer AS
 SELECT
     customers.company_name,
     SUM(

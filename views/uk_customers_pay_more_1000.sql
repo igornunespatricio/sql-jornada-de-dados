@@ -1,7 +1,5 @@
-DROP VIEW IF EXISTS uk_customers_pay_more_1000;
-
-
-CREATE VIEW uk_customers_pay_more_1000 AS
+CREATE
+OR REPLACE VIEW uk_customers_pay_more_1000 AS
 SELECT
     customers.contact_name,
     SUM(

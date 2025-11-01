@@ -1,7 +1,5 @@
-DROP VIEW IF EXISTS top_10_products;
-
-
-CREATE VIEW top_10_products AS
+CREATE
+OR REPLACE VIEW top_10_products AS
 SELECT
     products.product_name,
     SUM(

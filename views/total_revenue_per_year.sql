@@ -1,7 +1,5 @@
-DROP VIEW IF EXISTS total_revenue_per_year;
-
-
-CREATE VIEW total_revenue_per_year AS
+CREATE
+OR REPLACE VIEW total_revenue_per_year AS
 SELECT
     EXTRACT(
         YEAR

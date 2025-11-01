@@ -1,7 +1,5 @@
-DROP VIEW IF EXISTS monthly_revenue;
-
-
-CREATE VIEW monthly_revenue AS WITH MonthlyRevenue AS (
+CREATE
+OR REPLACE VIEW monthly_revenue AS WITH MonthlyRevenue AS (
     SELECT
         EXTRACT(
             YEAR
