@@ -1,9 +1,6 @@
 --
 -- PostgreSQL database dump
 --
-CREATE DATABASE northwind;
-
-\c northwind;
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
