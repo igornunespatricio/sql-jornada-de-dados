@@ -5,7 +5,7 @@
             "previewLimit": 50,
             "server": "localhost",
             "driver": "PostgreSQL",
-            "connectString": "postgresql://user:password@localhost:5432/study",
+            "connectString": "postgresql://admin:admin@localhost:5432/northwind",
             "name": "sql-jornada-de-dados"
         }
     ]
