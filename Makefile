@@ -1,6 +1,10 @@
 PROJECT_NAME := sql-jornada-de-dados
 
-up:
+setup-scripts:
+	@echo "Setting script permissions"
+	chmod +x scripts/*.sh
+
+up: setup-scripts
 	@echo "Starting $(PROJECT_NAME) containers"
 	docker-compose -p $(PROJECT_NAME) up -d
 
