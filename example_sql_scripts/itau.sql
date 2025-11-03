@@ -4,7 +4,9 @@ CREATE extension IF NOT EXISTS "uuid-ossp";
 CREATE TABLE IF NOT EXISTS clients (
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     limite INTEGER NOT NULL,
-    saldo INTEGER NOT NULL
+    saldo INTEGER NOT NULL,
+    CHECK (saldo >= - limite),
+    CHECK (limite > 0)
 );
 
 
@@ -13,7 +15,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     tipo CHAR(1) NOT NULL,
     descricao VARCHAR(10) NOT NULL,
     valor INTEGER NOT NULL,
-    cliente_id INTEGER NOT NULL,
+    cliente_id UUID NOT NULL,
     realizada_em TIMESTAMP NOT NULL DEFAULT NOW()
 );
 

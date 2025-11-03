@@ -60,8 +60,11 @@ id = 1
 ### Key Advantages:
 
 🌍 Distributed Systems - Unique across all databases
+
 🔒 Security - Can't guess next ID: /users/123 → /users/550e8400...
+
 📱 Offline First - Generate IDs on client before sync
+
 🔄 Safe Merging - No ID conflicts when combining databases
 
 ### Use Cases:
