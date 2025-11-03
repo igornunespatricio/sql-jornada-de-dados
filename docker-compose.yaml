@@ -35,6 +35,20 @@ services:
     restart: "no"  # Change from "always" to "no"
     command: ["/bin/sh", "/scripts/init_northwind_views.sh", "--cron"]
 
+  itau-initializer:
+    image: alpine:latest
+    container_name: itau_initializer
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./example_sql_scripts:/example_sql_scripts
+      - ./scripts/init_itau_database.sh:/scripts/init_itau_database.sh
+    networks:
+      - postgres_network
+    restart: "no"
+    command: ["/bin/sh", "/scripts/init_itau_database.sh"]
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
