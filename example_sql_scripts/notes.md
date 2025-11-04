@@ -89,3 +89,42 @@ id = 1
   );
   ```
   Choose UUIDs for distributed systems, sequential IDs for simple apps.
+
+# Stored procedures
+
+## What they are:
+
+Pre-written SQL code saved in the database for repeated execution.
+
+## Key Benefits:
+
+- Performance: Pre-compiled for faster execution
+- Security: Grant execute rights without direct table access
+- Maintenance: Business logic centralized in database
+- Efficiency: Reduce network traffic and code duplication
+
+## Typical Uses:
+
+Data validation, complex reports, batch operations, and business logic encapsulation.
+
+## Example
+
+```sql
+CREATE PROCEDURE GetCustomerOrderSummary
+    @CustomerID INT,
+    @StartDate DATE
+AS
+BEGIN
+    SELECT
+        c.CustomerName,
+        COUNT(o.OrderID) AS TotalOrders,
+        SUM(o.TotalAmount) AS TotalSpent
+    FROM Customers c
+    JOIN Orders o ON c.CustomerID = o.CustomerID
+    WHERE c.CustomerID = @CustomerID
+    AND o.OrderDate >= @StartDate
+    GROUP BY c.CustomerName;
+END
+
+EXEC GetCustomerOrderSummary @CustomerID = 123, @StartDate = '2024-01-01';
+```
