@@ -14,7 +14,7 @@ RAISE NOTICE 'Client with most transactions: %',
 client_id;
 
 
-CALL get_extract(client_id);
+CALL get_extract(client_id, 20);
 
 
 END $$;
