@@ -42,7 +42,7 @@ services:
       postgres:
         condition: service_healthy
     volumes:
-      - ./example_sql_scripts:/example_sql_scripts
+      - ./init-other-db-scripts/itau.sql:/scripts/itau.sql
       - ./scripts/init_itau_database.sh:/scripts/init_itau_database.sh
     networks:
       - postgres_network

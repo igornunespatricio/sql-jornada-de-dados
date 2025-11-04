@@ -31,11 +31,11 @@ PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d $DATABASE_NAME -c "CREAT
 
 # Initialize itau database with tables and data
 echo "Initializing itau database with tables and data..."
-if [ -f "/example_sql_scripts/itau.sql" ]; then
-    PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d itau -f /example_sql_scripts/itau.sql
+if [ -f "/scripts/itau.sql" ]; then
+    PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d itau -f /scripts/itau.sql
     echo "Itau database initialized successfully!"
 else
-    echo "Error: /example_sql_scripts/itau.sql file not found!"
+    echo "Error: /scripts/itau.sql file not found!"
     exit 1
 fi
 
