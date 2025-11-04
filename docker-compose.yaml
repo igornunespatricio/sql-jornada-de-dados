@@ -49,6 +49,20 @@ services:
     restart: "no"
     command: ["/bin/sh", "/scripts/init_itau_database.sh"]
 
+  trigger-initializer:
+    image: alpine:latest
+    container_name: trigger_initializer
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./init-other-db-scripts/trigger.sql:/scripts/trigger.sql
+      - ./scripts/init_trigger_database.sh:/scripts/init_trigger_database.sh
+    networks:
+      - postgres_network
+    restart: "no"
+    command: ["/bin/sh", "/scripts/init_trigger_database.sh"]
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
