@@ -22094,3 +22094,46 @@ ADD CONSTRAINT fk_employees_employees FOREIGN KEY (reports_to) REFERENCES employ
 --
 -- PostgreSQL database dump complete
 --
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_monthly_revenue AS
+SELECT EXTRACT(
+        YEAR
+        FROM o.order_date
+    ) AS YEAR,
+    EXTRACT(
+        MONTH
+        FROM o.order_date
+    ) AS MONTH,
+    SUM(od.unit_price * od.quantity) AS total_revenue
+FROM orders o
+    INNER JOIN order_details od ON o.order_id = od.order_id
+GROUP BY YEAR,
+    MONTH
+ORDER BY YEAR,
+    MONTH;
+
+CREATE
+OR REPLACE FUNCTION func_update_materialized_view() RETURNS TRIGGER AS $$
+BEGIN REFRESH MATERIALIZED VIEW mv_monthly_revenue;
+
+RETURN NULL;
+
+END;
+
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE TRIGGER trg_update_materialized_view_order AFTER
+INSERT
+    OR
+UPDATE
+    OR
+DELETE ON orders FOR EACH STATEMENT EXECUTE FUNCTION func_update_materialized_view();
+
+CREATE
+OR REPLACE TRIGGER trg_update_materialized_view_order_details AFTER
+INSERT
+    OR
+UPDATE
+    OR
+DELETE ON order_details FOR EACH STATEMENT EXECUTE FUNCTION func_update_materialized_view();

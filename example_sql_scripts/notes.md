@@ -128,3 +128,22 @@ END
 
 EXEC GetCustomerOrderSummary @CustomerID = 123, @StartDate = '2024-01-01';
 ```
+
+# Triggers
+
+## O que são Triggers?
+
+#### 1. O que são Triggers
+
+- **Definição**: Triggers são procedimentos armazenados, que são automaticamente executados ou disparados quando eventos específicos ocorrem em uma tabela ou visão.
+- **Funcionamento**: Eles são executados em resposta a eventos como INSERT, UPDATE ou DELETE.
+
+#### 2. Por que usamos Triggers em projetos
+
+- **Automatização de tarefas**: Para realizar ações automáticas que são necessárias após modificações na base de dados, como manutenção de logs ou atualização de tabelas relacionadas.
+- **Integridade de dados**: Garantir a consistência e a validação de dados ao aplicar regras de negócio diretamente no banco de dados.
+
+#### 3. Origem e finalidade da criação dos Triggers
+
+- **História**: Os triggers foram criados para oferecer uma maneira de responder automaticamente a eventos de modificação em bancos de dados, permitindo a execução de procedimentos de forma automática e transparente.
+- **Problemas resolvidos**: Antes dos triggers, muitas dessas tarefas precisavam ser controladas manualmente no código da aplicação, o que poderia levar a erros e inconsistências.
