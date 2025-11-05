@@ -147,3 +147,5 @@ EXEC GetCustomerOrderSummary @CustomerID = 123, @StartDate = '2024-01-01';
 
 - **História**: Os triggers foram criados para oferecer uma maneira de responder automaticamente a eventos de modificação em bancos de dados, permitindo a execução de procedimentos de forma automática e transparente.
 - **Problemas resolvidos**: Antes dos triggers, muitas dessas tarefas precisavam ser controladas manualmente no código da aplicação, o que poderia levar a erros e inconsistências.
+
+# ACID

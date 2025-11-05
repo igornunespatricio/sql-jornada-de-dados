@@ -63,6 +63,20 @@ services:
     restart: "no"
     command: ["/bin/sh", "/scripts/init_trigger_database.sh"]
 
+  acid-initializer:
+    image: alpine:latest
+    container_name: acid_initializer
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./init-other-db-scripts/acid.sql:/scripts/acid.sql
+      - ./scripts/init_acid_database.sh:/scripts/init_acid_database.sh
+    networks:
+      - postgres_network
+    restart: "no"
+    command: ["/bin/sh", "/scripts/init_acid_database.sh"]
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
