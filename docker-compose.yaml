@@ -35,47 +35,25 @@ services:
     restart: "no"  # Change from "always" to "no"
     command: ["/bin/sh", "/scripts/init_northwind_views.sh", "--cron"]
 
-  itau-initializer:
-    image: alpine:latest
-    container_name: itau_initializer
-    depends_on:
-      postgres:
-        condition: service_healthy
-    volumes:
-      - ./init-other-db-scripts/itau.sql:/scripts/itau.sql
-      - ./scripts/init_itau_database.sh:/scripts/init_itau_database.sh
-    networks:
-      - postgres_network
-    restart: "no"
-    command: ["/bin/sh", "/scripts/init_itau_database.sh"]
-
-  trigger-initializer:
-    image: alpine:latest
-    container_name: trigger_initializer
-    depends_on:
-      postgres:
-        condition: service_healthy
-    volumes:
-      - ./init-other-db-scripts/trigger.sql:/scripts/trigger.sql
-      - ./scripts/init_trigger_database.sh:/scripts/init_trigger_database.sh
-    networks:
-      - postgres_network
-    restart: "no"
-    command: ["/bin/sh", "/scripts/init_trigger_database.sh"]
-
-  acid-initializer:
-    image: alpine:latest
-    container_name: acid_initializer
-    depends_on:
-      postgres:
-        condition: service_healthy
-    volumes:
-      - ./init-other-db-scripts/acid.sql:/scripts/acid.sql
-      - ./scripts/init_acid_database.sh:/scripts/init_acid_database.sh
-    networks:
-      - postgres_network
-    restart: "no"
-    command: ["/bin/sh", "/scripts/init_acid_database.sh"]
+  database-initializer:
+      image: alpine:latest
+      container_name: database_initializer
+      depends_on:
+        postgres:
+          condition: service_healthy
+      volumes:
+        - ./init-other-db-scripts:/init-other-db-scripts  # Contains itau.sql, trigger.sql, acid.sql
+        - ./scripts/init_db.sh:/scripts/init_db.sh  # Single generic script
+      networks:
+        - postgres_network
+      restart: "no"
+      command: 
+        - /bin/sh
+        - -c
+        - |
+          /scripts/init_db.sh itau
+          /scripts/init_db.sh trigger
+          /scripts/init_db.sh acid
 
   pgadmin:
     image: dpage/pgadmin4
