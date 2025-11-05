@@ -1,5 +1,5 @@
 -- table creation Funcionario
-CREATE TABLE Funcionario (
+CREATE TABLE IF NOT EXISTS Funcionario (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100),
     salario DECIMAL(10, 2),
@@ -7,7 +7,7 @@ CREATE TABLE Funcionario (
 );
 
 -- table creation Funcionario_Auditoria
-CREATE TABLE Funcionario_Auditoria (
+CREATE TABLE IF NOT EXISTS Funcionario_Auditoria (
     id INT,
     salario_antigo DECIMAL(10, 2),
     novo_salario DECIMAL(10, 2),
@@ -44,11 +44,12 @@ END;
 
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_salario_modificado AFTER
+CREATE
+OR REPLACE TRIGGER trg_salario_modificado AFTER
 UPDATE OF salario ON Funcionario FOR EACH ROW EXECUTE FUNCTION registrar_auditoria_salario();
 
 -- Create audit table with column tracking
-CREATE TABLE Funcionario_Auditoria_Geral (
+CREATE TABLE IF NOT EXISTS Funcionario_Auditoria_Geral (
     id SERIAL PRIMARY KEY,
     funcionario_id INT NOT NULL,
     column_changed VARCHAR(50) NOT NULL,
@@ -114,7 +115,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create the trigger
-CREATE TRIGGER trg_funcionario_modificado AFTER
+CREATE
+OR REPLACE TRIGGER trg_funcionario_modificado AFTER
 UPDATE ON Funcionario FOR EACH ROW EXECUTE FUNCTION registrar_auditoria_geral();
 
 -- automatically update funcionario table to trigger general audit trigger
@@ -186,3 +188,77 @@ RAISE NOTICE 'Finished! Completed % total updates across all employees.',
 update_count;
 
 END $$;
+
+-- Criação da tabela Produto
+CREATE TABLE IF NOT EXISTS Produto (
+    cod_prod INT PRIMARY KEY,
+    descricao VARCHAR(50) UNIQUE,
+    qtde_disponivel INT NOT NULL DEFAULT 0
+);
+
+-- Inserção de produtos
+INSERT INTO Produto
+VALUES (1, 'Basica', 10);
+
+INSERT INTO Produto
+VALUES (2, 'Dados', 5);
+
+INSERT INTO Produto
+VALUES (3, 'Verao', 15);
+
+-- Criação da tabela RegistroVendas
+CREATE TABLE IF NOT EXISTS RegistroVendas (
+    cod_venda SERIAL PRIMARY KEY,
+    cod_prod INT,
+    qtde_vendida INT,
+    FOREIGN KEY (cod_prod) REFERENCES Produto(cod_prod) ON
+    DELETE CASCADE
+);
+
+-- Criação de um TRIGGER
+CREATE
+OR REPLACE FUNCTION verifica_estoque() RETURNS TRIGGER AS $$
+DECLARE qted_atual INTEGER;
+
+prod_desc VARCHAR(50);
+
+BEGIN
+SELECT qtde_disponivel,
+    descricao INTO qted_atual,
+    prod_desc
+FROM Produto
+WHERE cod_prod = NEW .cod_prod;
+
+IF qted_atual < NEW .qtde_vendida THEN RAISE
+EXCEPTION 'Quantidade indisponivel em estoque. Produto: % possui apenas % unidades disponiveis.',
+    prod_desc,
+    qted_atual;
+
+ELSE
+UPDATE Produto
+SET qtde_disponivel = qtde_disponivel - NEW .qtde_vendida
+WHERE cod_prod = NEW .cod_prod;
+
+END IF;
+
+RETURN NEW;
+
+END;
+
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR replace TRIGGER trg_verifica_estoque BEFORE
+INSERT ON RegistroVendas FOR EACH ROW EXECUTE FUNCTION verifica_estoque();
+
+-- Tentativa de venda de 5 unidades de Basico (deve ser bem-sucedida, pois há 10 unidades disponíveis)
+INSERT INTO RegistroVendas (cod_prod, qtde_vendida)
+VALUES (1, 5);
+
+-- Tentativa de venda de 6 unidades de Dados (deve ser bem-sucedida, pois há 5 unidades disponíveis e a quantidade vendida não excede o estoque)
+INSERT INTO RegistroVendas (cod_prod, qtde_vendida)
+VALUES (2, 5);
+
+-- Tentativa de venda de 16 unidades de Versao (deve falhar, pois só há 15 unidades disponíveis)
+INSERT INTO RegistroVendas (cod_prod, qtde_vendida)
+VALUES (3, 16);
