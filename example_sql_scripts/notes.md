@@ -230,3 +230,97 @@ COMMIT;
 - _Example: Committed transfer persists after power outage_
 
 **In practice**: ACID ensures that when you transfer money, it either completes entirely (debit + credit) or fails completely, maintaining data integrity even with multiple users and potential system failures.
+
+# SQL Execution Plan
+
+## What is an Execution Plan?
+
+An **execution plan** (or query plan) is a roadmap that shows how the SQL database will execute your query. It reveals the step-by-step operations, access methods, and cost estimates the optimizer chooses to retrieve data.
+
+## Key Components:
+
+### 1. **Access Methods**
+
+- **Sequential Scan**: Reads entire table (for unindexed queries)
+- **Index Scan**: Uses index to find specific rows
+- **Index Only Scan**: Retrieves data directly from index
+- **Bitmap Heap Scan**: Combines multiple index results
+
+### 2. **Join Methods**
+
+- **Nested Loop**: For small tables or indexed joins
+- **Hash Join**: For larger tables with equality conditions
+- **Merge Join**: For sorted data with range conditions
+
+### 3. **Operations**
+
+- **Sort**: Orders results (can be expensive)
+- **Aggregate**: GROUP BY and aggregate functions
+- **Limit**: TOP/LIMIT operations
+
+## Why Execution Plans Matter:
+
+- **Performance tuning**: Identify bottlenecks
+- **Index optimization**: See which indexes are used
+- **Query rewriting**: Understand why slow queries are slow
+- **Capacity planning**: Estimate resource requirements
+
+**Bottom line**: Execution plans are your window into how the database thinks - essential for optimizing query performance!
+
+## Example
+
+Query to run
+
+```sql
+explain analyze
+SELECT cars.manufacturer,
+    cars.model,
+    cars.country,
+    cars.year,
+    MAX(engines.horse_power) AS maximum_horse_power
+FROM cars
+    JOIN engines ON cars.engine_name = engines.name
+WHERE cars.year > 2015
+    AND cars.country = 'Germany'
+GROUP BY cars.manufacturer,
+    cars.model,
+    cars.country,
+    cars.year
+HAVING MAX(engines.horse_power) > 200
+ORDER BY maximum_horse_power DESC
+LIMIT 2
+```
+
+Execution plan
+
+# Query Execution Plan Analysis
+
+## Execution Plan Breakdown:
+
+| Operation               | Cost Estimate                      | Actual Performance                  | Details                                                                                                                  |
+| ----------------------- | ---------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Limit**               | cost=2.39..2.39<br>rows=1 width=27 | time=0.038..0.040<br>rows=2 loops=1 | Final result limitation                                                                                                  |
+| **Sort**                | cost=2.39..2.39<br>rows=1 width=27 | time=0.037..0.038<br>rows=2 loops=1 | Sort Key: max(engines.horse_power) DESC<br>Sort Method: quicksort<br>Memory: 25kB                                        |
+| **HashAggregate**       | cost=2.34..2.38<br>rows=1 width=27 | time=0.029..0.031<br>rows=3 loops=1 | Group Key: cars.manufacturer, model, country, year<br>Filter: max(engines.horse_power) > 200<br>Batches: 1, Memory: 24kB |
+| **Hash Join**           | cost=1.16..2.29<br>rows=4 width=27 | time=0.021..0.023<br>rows=4 loops=1 | Hash Condition: engines.name = cars.engine_name                                                                          |
+| **Seq Scan on engines** | cost=0.00..1.07<br>rows=7 width=13 | time=0.007..0.007<br>rows=7 loops=1 | Full table scan                                                                                                          |
+| **Hash**                | cost=1.10..1.10<br>rows=4 width=32 | time=0.008..0.009<br>rows=4 loops=1 | Buckets: 1024, Batches: 1<br>Memory Usage: 9kB                                                                           |
+| **Seq Scan on cars**    | cost=0.00..1.10<br>rows=4 width=32 | time=0.004..0.005<br>rows=4 loops=1 | Filter: year > 2015 AND country = 'Germany'<br>Rows Removed: 3                                                           |
+
+## Performance Summary:
+
+- **Planning Time**: 0.171 ms
+- **Execution Time**: 0.075 ms
+- **Total Rows Processed**: 7 cars → 4 filtered → 3 aggregated → 2 sorted → 2 limited
+
+## Key Observations:
+
+- **Efficient execution** with minimal memory usage
+- **Small dataset** allows sequential scans without performance penalty
+- **Hash join** effective for this data volume
+- **Unexpected result**: LIMIT expected 1 row but returned 2
+
+## Optimization Opportunities:
+
+- Consider indexes if table sizes grow significantly
+- Verify business logic for LIMIT clause expectation

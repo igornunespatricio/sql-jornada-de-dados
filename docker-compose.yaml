@@ -54,6 +54,7 @@ services:
           /scripts/init_db.sh itau
           /scripts/init_db.sh trigger
           /scripts/init_db.sh acid
+          /scripts/init_db.sh queryorder
 
   pgadmin:
     image: dpage/pgadmin4
