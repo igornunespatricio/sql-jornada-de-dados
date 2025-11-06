@@ -149,3 +149,84 @@ EXEC GetCustomerOrderSummary @CustomerID = 123, @StartDate = '2024-01-01';
 - **Problemas resolvidos**: Antes dos triggers, muitas dessas tarefas precisavam ser controladas manualmente no código da aplicação, o que poderia levar a erros e inconsistências.
 
 # ACID
+
+ACID is a set of four key properties that guarantee reliable database transactions:
+
+## A - Atomicity
+
+- **All or nothing**: Entire transaction must complete or fail completely
+- **No partial updates**: If any part fails, everything rolls back
+- _Example: Bank transfer - both debit AND credit must succeed_
+
+## C - Consistency
+
+- **Data integrity**: Transaction moves database from one valid state to another
+- **Rules preserved**: All constraints, triggers, and cascades are maintained
+- _Example: Account balance never goes negative_
+
+## I - Isolation
+
+- **Concurrent control**: Multiple transactions don't interfere with each other
+- **Serializable**: Appears as if transactions run one after another
+- _Example: Two transfers see consistent balances_
+
+### Examples
+
+```sql
+-- Transaction 1
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+BEGIN;
+SELECT balance FROM accounts WHERE id = 1; -- Returns 100
+
+-- Transaction 2 (commits)
+UPDATE accounts SET balance = 50 WHERE id = 1;
+COMMIT;
+
+-- Back to Transaction 1
+SELECT balance FROM accounts WHERE id = 1; -- Returns 50 (CHANGED!)
+```
+
+```sql
+-- Transaction 1
+SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+BEGIN;
+SELECT balance FROM accounts WHERE id = 1; -- Returns 100
+
+-- Transaction 2 (commits)
+UPDATE accounts SET balance = 50 WHERE id = 1;
+COMMIT;
+
+-- Back to Transaction 1
+SELECT balance FROM accounts WHERE id = 1; -- Still returns 100 (SAME!)
+```
+
+```sql
+-- Session 1
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+BEGIN;
+SELECT SUM(balance) FROM accounts WHERE type = 'savings';
+-- Returns 5000
+
+-- Session 2 (tries to run concurrently)
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+BEGIN;
+UPDATE accounts SET balance = balance + 1000 WHERE id = 1;
+-- This will BLOCK or cause serialization failure
+
+-- Back to Session 1
+INSERT INTO audit_log (total_savings) VALUES (5000);
+-- When we try to COMMIT:
+COMMIT;
+-- If both transactions can be serialized, they succeed
+-- If not, one gets: "ERROR: could not serialize access due to read/write dependencies"
+```
+
+### [Read Documentation](https://www.postgresql.org/docs/current/transaction-iso.html)
+
+## D - Durability
+
+- **Permanent changes**: Once committed, changes survive system failures
+- **Crash recovery**: Data is safely stored in non-volatile memory
+- _Example: Committed transfer persists after power outage_
+
+**In practice**: ACID ensures that when you transfer money, it either completes entirely (debit + credit) or fails completely, maintaining data integrity even with multiple users and potential system failures.
