@@ -402,3 +402,99 @@ Execution plan
 ![B-tree](https://i.sstatic.net/SLW1g.png)
 
 The key difference between B-tree and B+tree is that in a B-tree, both keys and data can be stored in all nodes (internal and leaf nodes), while in a B+tree, data is stored only in the leaf nodes and internal nodes contain only keys for navigation. This makes B+trees more efficient for range queries and sequential access because all leaf nodes are linked together, allowing quick traversal from one leaf to the next without backtracking through the tree hierarchy. Additionally, B+trees typically have higher fanout (more children per node) since internal nodes only store keys, not data, resulting in shorter trees and fewer disk accesses for search operations.
+
+# Database Partitioning
+
+## What is Partitioning?
+
+Partitioning is a database technique that splits large tables into smaller, more manageable pieces called partitions, while still treating them as a single logical table. Each partition stores a subset of data based on specific rules.
+
+## Types of Partitioning
+
+### Range Partitioning
+
+Data is divided based on ranges of values from a key column (typically dates, numeric values, or sequences). Ideal for time-series data or sequential numeric data.
+
+### List Partitioning
+
+Data is partitioned based on discrete values from a specified list (such as states, regions, or categories). Perfect for categorical data with known, finite values.
+
+### Hash Partitioning
+
+Data is distributed across partitions using a hash function applied to the partition key. Ensures even data distribution but makes targeted queries less efficient.
+
+## Advantages
+
+- **Performance**: Query performance improves through "partition pruning" where the database only scans relevant partitions
+- **Manageability**: Easier maintenance operations (backup, restore, vacuum) on smaller partitions
+- **Data Lifecycle**: Simplified archiving and purging of old data by dropping entire partitions
+- **I/O Distribution**: Partitions can be placed on different storage for better I/O balancing
+
+## Disadvantages
+
+- **Complexity**: Adds architectural complexity to database design and operations
+- **Planning Required**: Requires careful upfront planning of partition strategy
+- **Index Management**: Indexes must be carefully designed (local vs. global)
+- **Overhead**: Can introduce overhead if partition key isn't used in queries
+
+## Maintenance Considerations
+
+Partitioning requires ongoing maintenance including:
+
+- Creating new partitions for incoming data
+- Archiving or dropping old partitions based on retention policies
+- Monitoring partition sizes and distributions
+- Ensuring proper indexing strategies across partitions
+- Managing partition constraints and dependencies
+
+Proper automation through scripts or extensions like pg_partman is essential for production environments to handle routine partition maintenance tasks.
+
+![Partition Example](https://oracle-base.com/articles/misc/images/partitioning/partitioning.png)
+
+![Partition Example](https://learn.microsoft.com/en-us/azure/architecture/best-practices/images/data-partitioning/tablestorage.png)
+
+## Performance Example
+
+```sql
+EXPLAIN ANALYZE
+SELECT *
+FROM pessoas
+WHERE id = 10000;
+
+EXPLAIN ANALYZE
+SELECT *
+FROM pessoas_partition_range
+WHERE id = 10000;
+```
+
+The performance benefits of partitioning become evident when comparing query execution on partitioned versus non-partitioned tables:
+
+### Non-Partitioned Table Execution Plan
+
+| Metric              | Value                         |
+| ------------------- | ----------------------------- |
+| **Operation**       | Index Scan using pessoas_pkey |
+| **Cost Range**      | 0.43..8.45                    |
+| **Rows**            | 1 width=13                    |
+| **Actual Time**     | 2.067..2.070 ms               |
+| **Rows Returned**   | 1                             |
+| **Loops**           | 1                             |
+| **Index Condition** | (id = 10000)                  |
+| **Planning Time**   | 0.880 ms                      |
+| **Execution Time**  | 2.191 ms                      |
+
+### Partitioned Table Execution Plan
+
+| Metric              | Value                               |
+| ------------------- | ----------------------------------- |
+| **Operation**       | Index Scan using pessoas_part1_pkey |
+| **Cost Range**      | 0.43..8.45                          |
+| **Rows**            | 1 width=13                          |
+| **Actual Time**     | 0.666..0.668 ms                     |
+| **Rows Returned**   | 1                                   |
+| **Loops**           | 1                                   |
+| **Index Condition** | (id = 10000)                        |
+| **Planning Time**   | 1.446 ms                            |
+| **Execution Time**  | 0.683 ms                            |
+
+**Advantage Demonstrated**: The partitioned query executed **68% faster** than the non-partitioned equivalent. This significant performance gain occurs because the database leverages partition pruning - it only needs to scan the specific partition containing the target ID, dramatically reducing I/O operations and search space. While the partitioned query had slightly higher planning time due to partition identification, the execution time was substantially better, demonstrating that the initial planning overhead is well worth the dramatic improvement in actual data retrieval performance.
