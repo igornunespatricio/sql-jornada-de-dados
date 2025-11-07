@@ -324,3 +324,81 @@ Execution plan
 
 - Consider indexes if table sizes grow significantly
 - Verify business logic for LIMIT clause expectation
+
+# Database Indexing Summary
+
+## Topic 1: Database Indexes
+
+### Introduction to Indexes
+
+- Database indexes are structures that improve query efficiency by enabling fast data access
+- Without indexes, queries require sequential table scans (full table searches)
+- Indexes allow direct access to specific rows using indexed columns
+
+### Index Types
+
+- **B-Tree indexes**: Most common, balanced tree structure
+- **Hash indexes**: For equality comparisons
+- **Bitmap indexes**: For low-cardinality data
+
+### How Indexes Work
+
+- Created on one or more table columns
+- Database uses relevant indexes to quickly locate rows when querying indexed columns
+- Store sorted values with pointers to actual data
+
+### Advantages & Disadvantages
+
+- **Advantages**: Faster queries, efficient data retrieval
+- **Disadvantages**: Additional storage cost, update overhead during INSERT/UPDATE/DELETE operations
+
+## Topic 2: B-Tree Data Structures
+
+### B-Tree Introduction
+
+- Balanced tree structure used in databases and file systems
+- Designed for efficient insertions, deletions, and searches on large datasets
+- Maintains tree balance and optimizes depth
+
+### B-Tree Structure
+
+- Consists of nodes with multiple keys and pointers
+- Each node has minimum/maximum key/pointer limits
+- Maintains balanced tree structure automatically
+
+### B-Tree Operations
+
+- **Insertion**: Adds new keys while maintaining balance
+- **Deletion**: Removes keys while preserving structure
+- **Search**: Efficiently traverses tree to find keys
+
+### B-Tree Properties
+
+- Automatic balancing maintains acceptable tree depth
+- Efficient performance even with many insertions/deletions
+- Widely used for primary and secondary indexes in databases
+
+## Performance Considerations
+
+### Index Usage Patterns
+
+- **Efficient**: Equality searches on indexed columns
+- **Inefficient**: Wildcard searches (LIKE '%pattern%')
+- **Index-only scans**: When all needed columns are in the index
+
+### Storage Impact
+
+- Indexes consume additional disk space
+- Balance between query performance and storage overhead
+- Monitor index size vs. table size for optimization
+
+## Key Takeaways
+
+- Indexes dramatically improve query performance but add maintenance overhead
+- B-Tree indexes are the most common and versatile index type
+- Proper index design requires understanding query patterns and data characteristics
+- Index-only scans provide optimal performance when possible
+
+![B-tree](https://i.sstatic.net/SLW1g.png)
+
+The key difference between B-tree and B+tree is that in a B-tree, both keys and data can be stored in all nodes (internal and leaf nodes), while in a B+tree, data is stored only in the leaf nodes and internal nodes contain only keys for navigation. This makes B+trees more efficient for range queries and sequential access because all leaf nodes are linked together, allowing quick traversal from one leaf to the next without backtracking through the tree hierarchy. Additionally, B+trees typically have higher fanout (more children per node) since internal nodes only store keys, not data, resulting in shorter trees and fewer disk accesses for search operations.

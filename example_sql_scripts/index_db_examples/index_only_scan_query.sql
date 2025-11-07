@@ -1,0 +1,8 @@
+SELECT id
+FROM pessoas
+WHERE id = 100000;
+
+EXPLAIN ANALYZE
+SELECT id
+FROM pessoas
+WHERE id = 100000;
