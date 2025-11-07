@@ -1,23 +1,19 @@
 # SQL Jornada de Dados - Northwind Database Analytics
 
-A complete Docker-based PostgreSQL analytics environment with automated view management for the Northwind database. This project provides a robust containerized setup for data analysis with automatic view synchronization and monitoring using Docker Compose.
+A complete Docker-based PostgreSQL environment for data analytics with the classic Northwind database. This project provides a robust, containerized setup with automated database initialization and view management.
 
 ## ✨ Features
 
-| Feature                          | Description                                                   |
-| -------------------------------- | ------------------------------------------------------------- |
-| 🐘 **PostgreSQL 15**             | Full Northwind database pre-loaded and ready for analysis     |
-| 🖥️ **PgAdmin 4 Web Interface**   | Complete database management through web browser              |
-| 🔄 **Automated View Management** | Views automatically synchronized every minute via cron        |
-| 🔄 **Automated Procedures**      | Stored procedures automatically created in Itaú database      |
-| ❤️ **Health Monitoring**         | Built-in health checks ensure reliable service startup        |
-| 💾 **Persistent Data Storage**   | Database data persists safely across container restarts       |
-| ⚡ **Makefile Automation**       | Simple commands for effortless project management             |
-| 🔒 **Isolated Docker Network**   | Secure container communication in dedicated network           |
-| 🚀 **Self-Healing Views**        | Automatic view recreation on schema changes                   |
-| 🔄 **Materialized Views**        | Auto-refreshing cached queries for high-performance analytics |
+- **🐘 PostgreSQL 15** - Northwind database pre-loaded and ready for analysis
+- **🖥️ PgAdmin 4 Web Interface** - Complete database management through web browser
+- **🔄 Automated Database Initialization** - Multiple databases created automatically
+- **📊 Automated View Management** - Views synchronized via cron job
+- **❤️ Health Monitoring** - Built-in health checks ensure reliable service startup
+- **💾 Persistent Data Storage** - Database data persists across container restarts
+- **⚡ Makefile Automation** - Simple commands for effortless project management
+- **🔒 Isolated Docker Network** - Secure container communication
 
-## Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
 
@@ -25,83 +21,145 @@ A complete Docker-based PostgreSQL analytics environment with automated view man
 - 🐙 [Docker Compose](https://docs.docker.com/compose/install/)
 - 🔧 [Make](https://www.gnu.org/software/make/) (optional, but recommended)
 
-## 🚀 Getting Started
+### Installation & Setup
 
-### 🛠️ Project Setup
+1. **Start the services**
+   The project will automatically set up script permissions and launch all Docker services
 
-| Step | Action                 | Result                                      |
-| ---- | ---------------------- | ------------------------------------------- |
-| 1    | **Clone & Setup**      | Download and prepare the project            |
-| 2    | **Run `make up`**      | Start all Docker services automatically     |
-| 3    | **Auto-Configuration** | Script permissions set, containers launched |
+```bash
+git clone <your-repo-url>
+cd <project-directory>
 
-### 🌐 Access Services
+make up
+```
 
-| Service                   | Access                                                                                                                           | Credentials                                |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| **PgAdmin Web Interface** | 🌍 http://localhost:8080                                                                                                         | 📧 admin@admin.com<br>🔑 admin             |
-| **PostgreSQL Database**   | 🗄️ localhost:5432<br>🔗 `postgresql://admin:admin@localhost:5432/northwind`<br>🔗 `postgresql://admin:admin@localhost:5432/itau` | 🗃️ northwind, itau<br>👤 admin<br>🔑 admin |
+2. **Access the services**
+   - **PgAdmin**: http://localhost:8080
+     - Email: `admin@admin.com`
+     - Password: `admin`
+   - **PostgreSQL**: `localhost:5432`
+     - Connection string: `postgresql://admin:admin@localhost:5432/northwind`
 
-## ⚡ Makefile Commands
+## 🛠️ Project Architecture
 
-**Effortless project management with simple commands:**
+### Services Overview
 
-- 🚀 `make up` - Launch all services in background
-- 🛑 `make down` - Gracefully stop all running services
-- 🧹 `make clean` - Complete reset (removes all data and containers)
-- 🔧 `make setup-scripts` - Prepare scripts for execution
+Your Docker Compose setup includes four main services:
 
-## 📊 Database Views
+#### 1. **PostgreSQL Database** (`postgres:15`)
 
-**Automatically maintained analytical views:**
+- Hosts the main `northwind` database
+- Pre-configured with health checks
+- Data persistence through Docker volumes
+- Automatic initialization scripts execution
 
-- 📈 **Monthly Revenue** - Track revenue trends with month-over-month analysis and YTD calculations
-- 👥 **Customer Revenue** - Rank customers by revenue performance
-- 🎯 **Customer Segmentation** - Group customers into revenue quintiles for targeted analysis
-- 🏆 **Top Products** - Identify best-performing products
-- 📅 **Annual Revenue** - Year-over-year revenue trends and patterns
-- 🇬🇧 **UK High-Value Customers** - Focus on premium UK customer segment
+#### 2. **View Initializer** (`alpine:latest`)
 
-### 🔄 Real-time Materialized Views
+- Automatically creates and maintains database views
+- Runs every minute via cron job
+- Executes all SQL files from the `/views` directory
+- Waits for PostgreSQL to be healthy before starting
 
-**High-performance cached queries with automatic updates:**
+#### 3. **Database Initializer** (`alpine:latest`)
 
-- 🚀 **Monthly Revenue MV** - Materialized version of monthly revenue with trigger-based auto-refresh
-- ⚡ **Instant Updates** - Automatically refreshes when orders are inserted, updated, or deleted
-- 🎯 **Performance Optimized** - Pre-computed results for fast query response times
-- 🔧 **Smart Triggers** - PostgreSQL triggers on `orders` and `order_details` tables ensure data freshness
+- Creates and initializes multiple databases:
+  - `itau`
+  - `trigger`
+  - `acid`
+  - `queryorder`
+  - `index_db`
+  - `partition_db`
+- Executes corresponding SQL initialization scripts
+- Runs once after PostgreSQL is healthy
 
-_All views automatically refresh every minute to ensure data consistency_
+#### 4. **PgAdmin** (`dpage/pgadmin4`)
 
-## 🏗️ System Architecture
+- Web-based database administration tool
+- Pre-configured with server connections
+- Accessible at http://localhost:8080
 
-### 🐘 **PostgreSQL Service**
+## 📁 Project Structure
 
-- **Database Initialization** - Northwind and Itaú databases created on first launch
-- **Procedure Automation** - Stored procedures automatically created in Itaú database
-- **Data Persistence** - Docker volumes ensure data survives container restarts
-- **Health Monitoring** - Built-in health checks guarantee service reliability
+The project is organized with clear separation of concerns:
 
-### 🔄 **View Initializer Service**
+- Main service configuration
+- Automation commands
+- Database initialization scripts
+- View management with cron support
+- SQL view definitions
+- PgAdmin server configuration
 
-- **Lightweight Design** - Alpine Linux container for minimal resource usage
-- **Auto-provisioning** - Automatically installs PostgreSQL client tools
-- **Continuous Sync** - Runs view synchronization every 60 seconds
-- **Self-contained** - Zero external dependencies required
+## ⚡ Available Commands
 
-### 🖥️ **PgAdmin Service**
+The project includes automated commands for:
 
-- **Web-based Management** - Full database administration through browser
-- **Pre-configured Access** - Automatic connection to PostgreSQL service
-- **Persistent Settings** - Configuration survives container updates
-- **User-friendly Interface** - Intuitive GUI for database operations
+- Preparing scripts for execution
+- Starting all Docker services
+- Stopping running services
+- Complete system reset
 
-## 📈 Data Flow Pipeline
+```bash
+make setup-scripts    # Prepare scripts for execution
+make up              # Start all Docker services
+make down            # Stop running services
+make clean           # Complete system reset
+```
 
-1. **🚀 Initialization** - Northwind schema and sample data loaded on first run, Itaú schema and sample data also loaded
-2. **📋 Procedure Creation** - Stored procedures automatically added to Itaú database
-3. **🔍 Readiness Detection** - View initializer waits for PostgreSQL to be fully ready
-4. **📊 View Creation** - All analytical views created using safe replacement syntax
-5. **🔄 Continuous Monitoring** - Cron job ensures views stay synchronized
-6. **⚡ Live Updates** - Schema changes automatically propagate to all views
-7. **🔄 Real-time Materialized Views** - Order changes automatically trigger materialized view refreshes for instant analytics
+## 🔄 Automation Details
+
+### Database Initialization
+
+The system automatically:
+
+- Waits for PostgreSQL to be ready
+- Creates specified databases
+- Executes corresponding SQL initialization scripts
+- Handles multiple databases in sequence
+
+### View Management
+
+The view system:
+
+- Runs in cron mode (every minute)
+- Executes all SQL files in the views directory
+- Ensures views stay synchronized with schema changes
+- Automatically installs required dependencies
+
+## 🌐 Access Points
+
+| Service            | URL                   | Credentials                                                 |
+| ------------------ | --------------------- | ----------------------------------------------------------- |
+| **PgAdmin Web UI** | http://localhost:8080 | Email: `admin@admin.com`<br>Password: `admin`               |
+| **PostgreSQL**     | `localhost:5432`      | User: `admin`<br>Password: `admin`<br>Database: `northwind` |
+
+## 🗃️ Available Databases
+
+- **northwind** - Primary database with sample data
+- **itau** - Additional database for specific use cases
+- **trigger** - Database for trigger-related functionality
+- **acid** - Database for ACID compliance testing
+- **queryorder** - Database for query optimization
+- **index_db** - Database for index management
+- **partition_db** - Database for partitioning examples
+
+## 🔧 Troubleshooting
+
+If you encounter issues:
+
+```bash
+docker-compose ps                          # Check service status
+docker-compose logs [service-name]         # View service logs
+make clean && make up                      # Full reset
+make setup-scripts                         # Verify script permissions
+```
+
+## 📝 Notes
+
+- All database data persists in Docker volumes
+- The view initializer runs continuously to maintain view consistency
+- Health checks ensure proper service startup order
+- The project uses a dedicated Docker network for isolation
+
+---
+
+**Ready to explore your Northwind database analytics environment!** 🚀
