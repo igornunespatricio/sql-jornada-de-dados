@@ -1,0 +1,9 @@
+EXPLAIN ANALYZE
+SELECT *
+FROM pessoas
+WHERE id = 10000;
+
+EXPLAIN ANALYZE
+SELECT *
+FROM pessoas_partition_range
+WHERE id = 10000;
