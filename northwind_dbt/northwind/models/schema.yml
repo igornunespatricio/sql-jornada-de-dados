@@ -1,0 +1,9 @@
+sources:
+  - name: Northwind
+    description: "Northwind database source"
+    database: northwind
+    schema: public
+
+    tables:
+      - name: categories
+        description: "Product categories table"
