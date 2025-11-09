@@ -115,4 +115,8 @@ poetry run dbt seed --full-refresh
 
 This is where you write your models. Anything in your models directory will be a table or a view.
 
-This link [Best Practice to structure models](https://docs.getdbt.com/best-practices/how-we-structure/1-guide-overview) details the best practices to structure models according to dbt. Similar to medallion architecture.
+This link [Best Practice to structure models](https://docs.getdbt.com/best-practices/how-we-structure/1-guide-overview) details the best practices to structure models according to dbt. Similar to medallion architecture, but uses staging, intermediate and marts.
+
+## macros
+
+Where you can write function to determine rule for, for example, insert and update rows in tables.

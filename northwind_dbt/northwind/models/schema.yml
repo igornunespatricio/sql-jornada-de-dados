@@ -7,3 +7,6 @@ sources:
     tables:
       - name: categories
         description: "Product categories table"
+      
+      - name: new_table_seed
+        description: "new table added from seed directory for demonstration purpose."

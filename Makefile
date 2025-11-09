@@ -15,3 +15,14 @@ down:
 clean:
 	@echo "Removing all containers, volumes, and networks for $(PROJECT_NAME)"
 	docker-compose -p $(PROJECT_NAME) down --volumes --remove-orphans
+
+seed-dbt:
+	@echo "Seeding dbt"
+	cd northwind_dbt/northwind && poetry run dbt seed
+
+run-dbt:
+	@echo "Running dbt models"
+	cd northwind_dbt/northwind && poetry run dbt run
+
+all-dbt: seed-dbt run-dbt
+	@echo "Completed dbt seed and run"

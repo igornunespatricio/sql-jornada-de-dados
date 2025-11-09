@@ -1,3 +1,3 @@
 SELECT 
     *
-FROM {{ source('Northwind', 'categories') }}
+FROM {{ source('Northwind', 'new_table_seed') }}
