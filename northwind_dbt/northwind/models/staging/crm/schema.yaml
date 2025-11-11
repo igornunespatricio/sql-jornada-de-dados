@@ -1,0 +1,11 @@
+# in models/staging/crm/schema.yml
+version: 2
+
+sources:
+  - name: northwind
+    description: "Northwind data source"
+    database: northwind
+    schema: public
+    tables:
+      - name: new_table_seed
+        description: "Seed data for new table"

@@ -9,8 +9,7 @@
 with sales as (
     select 
         id,
-        first_name,
-        last_name,
+        full_name,
         date
     from 
         {{ ref('stg_crm__new_table') }}

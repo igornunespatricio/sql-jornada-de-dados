@@ -1,12 +1,12 @@
 WITH cte AS (
     SELECT
         id,
-        col1 as first_name,
-        col2 as last_name,
-        date,
-        new_col
+        trim(col1) as first_name,
+        trim(col2) as last_name,
+        trim(col1) || ' ' || trim(col2) as full_name,
+        date
     FROM
-        {{ ref("raw_crm__new_table") }}
+        {{ source("northwind", "new_table_seed") }}
 )
 SELECT 
     *
