@@ -1,8 +1,0 @@
-sources:
-  - name: Northwind
-    description: "Northwind database source"
-    database: northwind
-    schema: public
-    tables:
-      - name: new_table_seed
-        description: "new table added from seed directory for demonstration purpose."
