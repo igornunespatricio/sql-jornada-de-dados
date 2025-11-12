@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: northwind
+    description: "Northwind database source"
+    database: northwind
+    schema: public_gold
+    tables:
+      - name: sales
+        description: "Sales table"
+        columns:
+          - name: id,
+            description: "Primary key identifier"
+          - name: full_name,
+            description: "Full name of the customer"
+          - name: date,
+            description: "Date associated with the record"

@@ -1,0 +1,19 @@
+version: 2
+
+sources:
+  - name: northwind
+    description: "Northwind database source"
+    database: northwind
+    schema: public
+    tables:
+      - name: new_table_seed
+        description: "Seed table containing customer name data"
+        columns:
+          - name: id
+            description: "Primary key identifier"
+          - name: col1
+            description: "First name column"
+          - name: col2
+            description: "Last name column"
+          - name: date
+            description: "Date associated with the record"

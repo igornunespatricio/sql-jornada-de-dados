@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: stg_crm__new_table
+    description: "Cleaned customer names with full name concatenation"
+    columns:
+      - name: id
+        description: "Primary key identifier"
+        data_tests:
+          - not_null
+          - unique
+      - name: first_name
+        description: "Trimmed first name"
+        data_tests:
+          - not_null
+      - name: last_name
+        description: "Trimmed last name"
+        data_tests:
+          - not_null
+      - name: full_name
+        description: "Concatenated full name (first + last)"
+        data_tests:
+          - not_null
+      - name: date
+        description: "Date associated with the record"
+        data_tests:
+          - not_null
