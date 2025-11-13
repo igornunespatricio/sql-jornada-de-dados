@@ -20,6 +20,7 @@ sources:
 
       - name: orders
         description: "Customer orders table"
+        loaded_at_field: order_date
         columns:
           - name: order_id
             description: "Primary key identifier for orders"
@@ -156,3 +157,43 @@ sources:
             description: "Notes about the employee"
           - name: reports_to
             description: "Manager's employee_id (self-referencing foreign key)"
+
+      - name: products
+        description: "Product master data with inventory and pricing information"
+        loaded_at_field: null
+        columns:
+          - name: product_id
+            description: "Primary key for products table"
+            tests:
+              - not_null
+              - unique
+          - name: product_name
+            description: "Name of the product"
+            tests:
+              - not_null
+          - name: supplier_id
+            description: "Foreign key to suppliers table"
+          - name: category_id
+            description: "Foreign key to categories table"
+          - name: quantity_per_unit
+            description: "Packaging description (e.g., '24 - 12 oz bottles')"
+          - name: unit_price
+            description: "Price per unit"
+            tests:
+              - not_null
+          - name: units_in_stock
+            description: "Current inventory level"
+            tests:
+              - not_null
+          - name: units_on_order
+            description: "Units on order from supplier"
+            tests:
+              - not_null
+          - name: reorder_level
+            description: "Minimum stock level before reordering"
+            tests:
+              - not_null
+          - name: discontinued
+            description: "1 if product is discontinued, 0 if active"
+            tests:
+              - not_null

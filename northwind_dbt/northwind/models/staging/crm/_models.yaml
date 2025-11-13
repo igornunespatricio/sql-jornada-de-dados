@@ -236,3 +236,66 @@ models:
         description: "Flag indicating missing region data"
       - name: has_missing_phone_flag
         description: "Flag indicating missing home phone number"
+
+  - name: stg_crm__products
+    description: "Cleaned and enriched product data with inventory analytics"
+    columns:
+      - name: product_id
+        description: "Primary key for products"
+        tests:
+          - not_null
+          - unique
+      - name: product_name
+        description: "Name of the product"
+        tests:
+          - not_null
+      - name: supplier_id
+        description: "Foreign key to suppliers table"
+      - name: category_id
+        description: "Foreign key to categories table"
+      - name: quantity_per_unit
+        description: "Packaging description"
+      - name: unit_price
+        description: "Price per unit in decimal format"
+        tests:
+          - not_null
+      - name: units_in_stock
+        description: "Current inventory level"
+        tests:
+          - not_null
+      - name: units_on_order
+        description: "Units on order from supplier"
+        tests:
+          - not_null
+      - name: reorder_level
+        description: "Minimum stock level before reordering"
+        tests:
+          - not_null
+      - name: discontinued
+        description: "1 if discontinued, 0 if active"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+      - name: total_available_units
+        description: "Sum of units in stock and on order"
+      - name: units_above_reorder_level
+        description: "Difference between current stock and reorder level"
+      - name: inventory_status
+        description: "Inventory status (Out of Stock, Low Stock, In Stock)"
+        tests:
+          - accepted_values:
+              values: ['Out of Stock', 'Low Stock', 'In Stock']
+      - name: product_status
+        description: "Product status (Active, Discontinued)"
+        tests:
+          - accepted_values:
+              values: ['Active', 'Discontinued']
+      - name: has_invalid_price_flag
+        description: "Flag for zero or negative unit prices"
+      - name: has_negative_stock_flag
+        description: "Flag for negative units in stock"
+      - name: has_negative_order_flag
+        description: "Flag for negative units on order"
+      - name: has_negative_reorder_flag
+        description: "Flag for negative reorder levels"
