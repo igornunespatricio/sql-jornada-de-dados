@@ -13,9 +13,9 @@ SELECT
     discount,
     
     -- Derived calculations
-    unit_price * quantity AS gross_amount,
-    unit_price * quantity * (1 - discount) AS net_amount,
-    unit_price * quantity * discount AS discount_amount,
+    CAST(unit_price * quantity AS DECIMAL(10,2)) AS gross_amount,
+    CAST(unit_price * quantity * (1 - discount) AS DECIMAL(10,2)) AS net_amount,
+    CAST(unit_price * quantity * discount AS DECIMAL(10,2)) AS discount_amount,
     
     -- Data quality flags
     discount < 0 OR discount > 1 AS has_invalid_discount_flag,
