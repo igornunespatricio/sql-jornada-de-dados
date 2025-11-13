@@ -17,3 +17,58 @@ sources:
             description: "Last name column"
           - name: date
             description: "Date associated with the record"
+
+      - name: orders
+        description: "Customer orders table"
+        columns:
+          - name: order_id
+            description: "Primary key identifier for orders"
+          - name: customer_id
+            description: "Foreign key referencing customers"
+          - name: employee_id
+            description: "Foreign key referencing employees"
+          - name: order_date
+            description: "Date when order was placed"
+          - name: required_date
+            description: "Date when order is required by customer"
+          - name: shipped_date
+            description: "Date when order was shipped"
+          - name: ship_via
+            description: "Foreign key referencing shippers"
+          - name: freight
+            description: "Shipping cost"
+          - name: ship_name
+            description: "Recipient name for shipping"
+          - name: ship_address
+            description: "Shipping street address"
+          - name: ship_city
+            description: "Shipping city"
+          - name: ship_region
+            description: "Shipping region/state"
+          - name: ship_postal_code
+            description: "Shipping postal code"
+          - name: ship_country
+            description: "Shipping country"
+      
+      - name: order_details
+        description: "Individual line items for each order"
+        loaded_at_field: null  # This table doesn't have a timestamp column
+        columns:
+          - name: order_id
+            description: "Foreign key to orders table"
+            tests:
+              - not_null
+          - name: product_id
+            description: "Foreign key to products table"
+            tests:
+              - not_null
+          - name: unit_price
+            description: "Price per unit at time of order"
+            tests:
+              - not_null
+          - name: quantity
+            description: "Quantity ordered"
+            tests:
+              - not_null
+          - name: discount
+            description: "Discount applied (0-1 scale)"

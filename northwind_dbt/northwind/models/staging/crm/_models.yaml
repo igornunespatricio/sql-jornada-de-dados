@@ -25,3 +25,100 @@ models:
         description: "Date associated with the record"
         data_tests:
           - not_null
+
+  - name: stg_crm__orders
+    description: "Cleaned and standardized orders data from Northwind"
+    columns:
+      - name: order_id
+        description: "Primary key identifier for orders"
+        data_tests:
+          - not_null
+          - unique
+      - name: customer_id
+        description: "Foreign key referencing customers"
+        data_tests:
+          - not_null
+      - name: employee_id
+        description: "Foreign key referencing employees"
+      - name: order_date
+        description: "Date when order was placed"
+        data_tests:
+          - not_null
+      - name: required_date
+        description: "Date when order is required by customer"
+        data_tests:
+          - not_null
+      - name: shipped_date
+        description: "Date when order was shipped"
+      - name: shipper_id
+        description: "Foreign key referencing shippers"
+      - name: freight
+        description: "Shipping cost"
+        data_tests:
+          - not_null
+      - name: ship_name
+        description: "Recipient name for shipping"
+      - name: ship_address
+        description: "Shipping street address"
+      - name: ship_city
+        description: "Shipping city"
+      - name: ship_region
+        description: "Shipping region/state"
+      - name: ship_postal_code
+        description: "Shipping postal code"
+      - name: ship_country
+        description: "Shipping country"
+      - name: order_status
+        description: "Derived order status (shipped, overdue, processing)"
+        data_tests:
+          - accepted_values:
+              values: ['shipped', 'overdue', 'processing']
+      - name: days_to_ship
+        description: "Number of days between order date and shipment date"
+      - name: has_negative_freight_flag
+        description: "Flag indicating if freight cost is negative"
+      - name: has_invalid_dates_flag
+        description: "Flag indicating if order date is after shipment date"
+      - name: is_late_shipment_flag
+        description: "Flag indicating if shipment was after required date"
+  
+  - name: stg_crm__order_details
+    description: "Cleaned and enriched order line items with calculated amounts"
+    columns:
+      - name: order_id
+        description: "Foreign key to orders table"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_crm__orders')
+              field: order_id
+      - name: product_id
+        description: "Foreign key to products table"
+        tests:
+          - not_null
+      - name: unit_price
+        description: "Price per unit at time of order"
+        tests:
+          - not_null
+      - name: quantity
+        description: "Quantity ordered"
+        tests:
+          - not_null
+      - name: discount
+        description: "Discount applied (0-1 scale)"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1
+      - name: gross_amount
+        description: "Total amount before discount (unit_price * quantity)"
+      - name: net_amount
+        description: "Total amount after discount"
+      - name: discount_amount
+        description: "Total discount amount"
+      - name: has_invalid_discount_flag
+        description: "Flag for discounts outside valid range (0-1)"
+      - name: has_invalid_quantity_flag
+        description: "Flag for zero or negative quantities"
+      - name: has_negative_price_flag
+        description: "Flag for negative unit prices"
