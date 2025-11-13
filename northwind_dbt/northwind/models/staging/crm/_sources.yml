@@ -72,3 +72,37 @@ sources:
               - not_null
           - name: discount
             description: "Discount applied (0-1 scale)"
+      
+      - name: customers
+        description: "Customer master data with company and contact information"
+        loaded_at_field: null
+        columns:
+          - name: customer_id
+            description: "Primary key for customers table"
+            tests:
+              - not_null
+              - unique
+          - name: company_name
+            description: "Official company name"
+            tests:
+              - not_null
+          - name: contact_name
+            description: "Primary contact person name"
+            tests:
+              - not_null
+          - name: contact_title
+            description: "Job title of contact person"
+          - name: address
+            description: "Street address"
+          - name: city
+            description: "City"
+          - name: region
+            description: "State/region/province"
+          - name: postal_code
+            description: "Postal code"
+          - name: country
+            description: "Country"
+          - name: phone
+            description: "Phone number"
+          - name: fax
+            description: "Fax number"

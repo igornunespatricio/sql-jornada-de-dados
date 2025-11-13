@@ -122,3 +122,45 @@ models:
         description: "Flag for zero or negative quantities"
       - name: has_negative_price_flag
         description: "Flag for negative unit prices"
+  
+  - name: stg_crm__customers
+    description: "Cleaned and standardized customer master data"
+    columns:
+      - name: customer_id
+        description: "Primary key for customers"
+        tests:
+          - not_null
+          - unique
+      - name: company_name
+        description: "Official company name"
+        tests:
+          - not_null
+      - name: contact_name
+        description: "Primary contact person name"
+        tests:
+          - not_null
+      - name: contact_title
+        description: "Job title of contact person"
+      - name: address
+        description: "Street address"
+      - name: city
+        description: "City"
+      - name: region
+        description: "State/region/province (Unknown if missing)"
+      - name: postal_code
+        description: "Postal code"
+      - name: country
+        description: "Country"
+      - name: phone
+        description: "Phone number"
+      - name: fax
+        description: "Fax number"
+      - name: contact_category
+        description: "Categorized contact title (Owner, Manager, Representative, Agent, Other)"
+        tests:
+          - accepted_values:
+              values: ['Owner', 'Manager', 'Representative', 'Agent', 'Other']
+      - name: has_missing_phone_flag
+        description: "Flag indicating missing phone number"
+      - name: has_missing_region_flag
+        description: "Flag indicating missing region data"
