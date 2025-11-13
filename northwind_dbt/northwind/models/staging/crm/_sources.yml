@@ -106,3 +106,53 @@ sources:
             description: "Phone number"
           - name: fax
             description: "Fax number"
+      
+      - name: employees
+        description: "Employee master data with personal and employment information"
+        loaded_at_field: hire_date
+        columns:
+          - name: employee_id
+            description: "Primary key for employees table"
+            tests:
+              - not_null
+              - unique
+          - name: last_name
+            description: "Employee's last name"
+            tests:
+              - not_null
+          - name: first_name
+            description: "Employee's first name"
+            tests:
+              - not_null
+          - name: title
+            description: "Job title"
+            tests:
+              - not_null
+          - name: title_of_courtesy
+            description: "Courtesy title (Mr., Ms., Dr., etc.)"
+          - name: birth_date
+            description: "Date of birth"
+            tests:
+              - not_null
+          - name: hire_date
+            description: "Date when employee was hired"
+            tests:
+              - not_null
+          - name: address
+            description: "Street address"
+          - name: city
+            description: "City"
+          - name: region
+            description: "State/region/province"
+          - name: postal_code
+            description: "Postal code"
+          - name: country
+            description: "Country"
+          - name: home_phone
+            description: "Home phone number"
+          - name: extension
+            description: "Phone extension"
+          - name: notes
+            description: "Notes about the employee"
+          - name: reports_to
+            description: "Manager's employee_id (self-referencing foreign key)"

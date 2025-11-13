@@ -164,3 +164,75 @@ models:
         description: "Flag indicating missing phone number"
       - name: has_missing_region_flag
         description: "Flag indicating missing region data"
+
+  - name: stg_crm__employees
+    description: "Cleaned and enriched employee data with derived employment metrics"
+    columns:
+      - name: employee_id
+        description: "Primary key for employees"
+        tests:
+          - not_null
+          - unique
+      - name: last_name
+        description: "Employee's last name"
+        tests:
+          - not_null
+      - name: first_name
+        description: "Employee's first name"
+        tests:
+          - not_null
+      - name: full_name
+        description: "Concatenated full name"
+        tests:
+          - not_null
+      - name: title
+        description: "Job title"
+        tests:
+          - not_null
+      - name: title_of_courtesy
+        description: "Courtesy title (Mr., Ms., Dr., etc.)"
+      - name: birth_date
+        description: "Date of birth"
+        tests:
+          - not_null
+      - name: hire_date
+        description: "Date when employee was hired"
+        tests:
+          - not_null
+      - name: address
+        description: "Street address"
+      - name: city
+        description: "City"
+      - name: region
+        description: "State/region/province (Unknown if missing)"
+      - name: postal_code
+        description: "Postal code"
+      - name: country
+        description: "Country"
+      - name: home_phone
+        description: "Home phone number"
+      - name: extension
+        description: "Phone extension"
+      - name: notes
+        description: "Notes about the employee"
+      - name: reports_to
+        description: "Manager's employee_id"
+        tests:
+          - relationships:
+              to: ref('stg_crm__employees')
+              field: employee_id
+      - name: employment_level
+        description: "Categorized employment level (Management, Staff, Other)"
+        tests:
+          - accepted_values:
+              values: ['Management', 'Staff', 'Other']
+      - name: current_age
+        description: "Current age in years"
+      - name: years_of_service
+        description: "Years of service with the company"
+      - name: is_top_level_manager_flag
+        description: "Flag for employees who don't report to anyone (top management)"
+      - name: has_missing_region_flag
+        description: "Flag indicating missing region data"
+      - name: has_missing_phone_flag
+        description: "Flag indicating missing home phone number"
