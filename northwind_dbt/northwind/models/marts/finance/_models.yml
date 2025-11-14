@@ -1,0 +1,135 @@
+version: 2
+
+models:
+  - name: fct_sales
+    description: "Fact table for sales analysis with complete order, product, customer, employee, and shipper context"
+    columns:
+      - name: order_id
+        description: "Foreign key to orders table"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_crm__orders')
+              field: order_id
+      - name: product_id
+        description: "Foreign key to products table"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_crm__products')
+              field: product_id
+      - name: customer_id
+        description: "Foreign key to customers table"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_crm__customers')
+              field: customer_id
+      - name: employee_id
+        description: "Foreign key to employees table"
+        tests:
+          - relationships:
+              to: ref('stg_crm__employees')
+              field: employee_id
+      - name: shipper_id
+        description: "Foreign key to shippers table"
+        tests:
+          - relationships:
+              to: ref('stg_crm__shippers')
+              field: shipper_id
+      - name: category_id
+        description: "Foreign key to categories table"
+        tests:
+          - relationships:
+              to: ref('stg_crm__categories')
+              field: category_id
+      - name: order_date
+        description: "Date when order was placed"
+        tests:
+          - not_null
+      
+      # Sales Metrics
+      - name: gross_amount
+        description: "Total amount before discount"
+        tests:
+          - not_null
+      - name: net_amount
+        description: "Total amount after discount"
+        tests:
+          - not_null
+      - name: discount_amount
+        description: "Total discount applied"
+        tests:
+          - not_null
+      - name: quantity
+        description: "Quantity of products ordered"
+        tests:
+          - not_null
+      - name: freight
+        description: "Shipping cost for the order"
+        tests:
+          - not_null
+      
+      # Product Context
+      - name: product_name
+        description: "Name of the product"
+        tests:
+          - not_null
+      - name: product_status
+        description: "Product status (Active/Discontinued)"
+        tests:
+          - accepted_values:
+              values: ['Active', 'Discontinued']
+      - name: category_name
+        description: "Name of the product category"
+        tests:
+          - not_null
+      
+      # Customer Context
+      - name: company_name
+        description: "Customer company name"
+        tests:
+          - not_null
+      - name: contact_name
+        description: "Primary contact person at customer"
+        tests:
+          - not_null
+      - name: country
+        description: "Customer country"
+        tests:
+          - not_null
+      
+      # Employee Context
+      - name: employee_name
+        description: "Full name of employee who handled the order"
+      - name: employment_level
+        description: "Employment level of the employee"
+        tests:
+          - accepted_values:
+              values: ['Management', 'Staff', 'Other']
+      
+      # Shipper Context (NEW)
+      - name: shipper_company_name
+        description: "Name of the shipping company"
+        tests:
+          - not_null
+      - name: shipper_phone
+        description: "Phone number of the shipping company"
+      - name: has_missing_shipper_phone_flag
+        description: "Flag indicating missing shipper phone number"
+      
+      # Derived Fields for Analysis
+      - name: discount_rate
+        description: "Discount percentage (0-1)"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1
+      - name: freight_to_sales_ratio
+        description: "Freight cost as percentage of net sales amount"
+      
+      # Data Quality Flags
+      - name: has_negative_sales_flag
+        description: "Flag for negative net sales amounts"
+      - name: has_excessive_discount_flag
+        description: "Flag for discounts greater than 50%"

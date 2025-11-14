@@ -321,3 +321,20 @@ models:
               values: ['Perishable', 'Highly Perishable', 'Shelf Stable']
       - name: has_missing_description_flag
         description: "Flag indicating missing category description"
+
+  - name: stg_crm__shippers
+    description: "Cleaned shipping company data"
+    columns:
+      - name: shipper_id
+        description: "Primary key for shippers"
+        tests:
+          - not_null
+          - unique
+      - name: company_name
+        description: "Name of the shipping company"
+        tests:
+          - not_null
+      - name: phone
+        description: "Contact phone number for the shipper"
+      - name: has_missing_phone_flag
+        description: "Flag indicating missing phone number"

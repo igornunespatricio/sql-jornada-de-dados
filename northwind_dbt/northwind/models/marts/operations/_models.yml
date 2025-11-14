@@ -1,0 +1,59 @@
+version: 2
+
+models:
+  - name: dim_inventory
+    description: "Product inventory dimension table with stock levels, pricing, and category context"
+    columns:
+      - name: product_id
+        description: "Primary key for products"
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('stg_crm__products')
+              field: product_id
+      - name: product_name
+        description: "Name of the product"
+        tests:
+          - not_null
+      - name: product_status
+        description: "Product status (Active/Discontinued)"
+        tests:
+          - accepted_values:
+              values: ['Active', 'Discontinued']
+      - name: inventory_status
+        description: "Current inventory status"
+        tests:
+          - accepted_values:
+              values: ['Out of Stock', 'Low Stock', 'In Stock']
+      
+      # Inventory Metrics
+      - name: units_in_stock
+        description: "Current quantity available in inventory"
+      - name: units_on_order
+        description: "Quantity on order from suppliers"
+      - name: reorder_level
+        description: "Minimum stock level triggering reorders"
+      - name: total_available_units
+        description: "Sum of units in stock and on order"
+      - name: units_above_reorder_level
+        description: "Buffer between current stock and reorder level"
+      
+      # Category Context
+      - name: category_name
+        description: "Product category name"
+        tests:
+          - not_null
+      - name: perishability_category
+        description: "Shelf life classification"
+        tests:
+          - accepted_values:
+              values: ['Perishable', 'Highly Perishable', 'Shelf Stable']
+      
+      # Pricing
+      - name: unit_price
+        description: "Price per unit in decimal format"
+        tests:
+          - not_null
+      - name: quantity_per_unit
+        description: "Packaging description"

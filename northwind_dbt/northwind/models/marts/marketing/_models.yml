@@ -1,0 +1,47 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: "Customer dimension table with aggregated order history and segmentation data"
+    columns:
+      - name: customer_id
+        description: "Primary key for customers"
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('stg_crm__customers')
+              field: customer_id
+      - name: company_name
+        description: "Official company name"
+        tests:
+          - not_null
+      - name: contact_name
+        description: "Primary contact person name"
+        tests:
+          - not_null
+      - name: contact_category
+        description: "Categorized contact title"
+        tests:
+          - accepted_values:
+              values: ['Owner', 'Manager', 'Representative', 'Agent', 'Other']
+      - name: country
+        description: "Customer country"
+      - name: region
+        description: "Customer region"
+      - name: city
+        description: "Customer city"
+      
+      # Customer Order Metrics
+      - name: total_orders
+        description: "Total number of orders placed by customer"
+      - name: total_spent
+        description: "Total amount spent by customer across all orders (decimal)"
+      - name: avg_order_value
+        description: "Average value per order for this customer (decimal)"
+      
+      # Data Quality Flags
+      - name: has_missing_phone_flag
+        description: "Flag indicating missing phone number"
+      - name: has_missing_region_flag
+        description: "Flag indicating missing region data"

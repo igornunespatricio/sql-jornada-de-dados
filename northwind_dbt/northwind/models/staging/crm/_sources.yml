@@ -215,3 +215,19 @@ sources:
             description: "Description of the category and products it contains"
           - name: picture
             description: "Binary image data for the category"
+
+      - name: shippers
+        description: "Shipping company master data"
+        loaded_at_field: null  # Static reference data
+        columns:
+          - name: shipper_id
+            description: "Primary key for shippers table"
+            tests:
+              - not_null
+              - unique
+          - name: company_name
+            description: "Name of the shipping company"
+            tests:
+              - not_null
+          - name: phone
+            description: "Contact phone number for the shipper"
