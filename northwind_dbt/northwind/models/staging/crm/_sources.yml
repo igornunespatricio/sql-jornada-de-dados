@@ -197,3 +197,21 @@ sources:
             description: "1 if product is discontinued, 0 if active"
             tests:
               - not_null
+
+      - name: categories
+        description: "Product category classification data"
+        loaded_at_field: null  # Static reference data
+        columns:
+          - name: category_id
+            description: "Primary key for categories table"
+            tests:
+              - not_null
+              - unique
+          - name: category_name
+            description: "Name of the product category"
+            tests:
+              - not_null
+          - name: description
+            description: "Description of the category and products it contains"
+          - name: picture
+            description: "Binary image data for the category"

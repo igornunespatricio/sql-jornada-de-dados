@@ -299,3 +299,25 @@ models:
         description: "Flag for negative units on order"
       - name: has_negative_reorder_flag
         description: "Flag for negative reorder levels"
+
+  - name: stg_crm__categories
+    description: "Cleaned and enriched product category data with business classifications"
+    columns:
+      - name: category_id
+        description: "Primary key for categories"
+        tests:
+          - not_null
+          - unique
+      - name: category_name
+        description: "Name of the product category"
+        tests:
+          - not_null
+      - name: description
+        description: "Description of the category and products it contains"
+      - name: perishability_category
+        description: "Business classification based on product shelf life (Perishable, Highly Perishable, Shelf Stable)"
+        tests:
+          - accepted_values:
+              values: ['Perishable', 'Highly Perishable', 'Shelf Stable']
+      - name: has_missing_description_flag
+        description: "Flag indicating missing category description"
