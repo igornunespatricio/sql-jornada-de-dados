@@ -111,7 +111,7 @@ make clean           # Complete system reset
 
 ## 🎯 dbt Analytics Commands
 
-````bash
+```bash
 make run-dbt              # Run all dbt models
 make test-dbt             # Run data quality tests
 make docs-serve           # Serve data documentation
@@ -164,7 +164,7 @@ docker-compose ps                          # Check service status
 docker-compose logs [service-name]         # View service logs
 make clean && make up                      # Full reset
 make setup-scripts                         # Verify script permissions
-````
+```
 
 ## 📝 Notes
 
