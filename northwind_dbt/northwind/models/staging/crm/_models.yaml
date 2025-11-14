@@ -1,0 +1,340 @@
+version: 2
+
+models:
+  - name: stg_crm__new_table
+    description: "Cleaned customer names with full name concatenation"
+    columns:
+      - name: id
+        description: "Primary key identifier"
+        data_tests:
+          - not_null
+          - unique
+      - name: first_name
+        description: "Trimmed first name"
+        data_tests:
+          - not_null
+      - name: last_name
+        description: "Trimmed last name"
+        data_tests:
+          - not_null
+      - name: full_name
+        description: "Concatenated full name (first + last)"
+        data_tests:
+          - not_null
+      - name: date
+        description: "Date associated with the record"
+        data_tests:
+          - not_null
+
+  - name: stg_crm__orders
+    description: "Cleaned and standardized orders data from Northwind"
+    columns:
+      - name: order_id
+        description: "Primary key identifier for orders"
+        data_tests:
+          - not_null
+          - unique
+      - name: customer_id
+        description: "Foreign key referencing customers"
+        data_tests:
+          - not_null
+      - name: employee_id
+        description: "Foreign key referencing employees"
+      - name: order_date
+        description: "Date when order was placed"
+        data_tests:
+          - not_null
+      - name: required_date
+        description: "Date when order is required by customer"
+        data_tests:
+          - not_null
+      - name: shipped_date
+        description: "Date when order was shipped"
+      - name: shipper_id
+        description: "Foreign key referencing shippers"
+      - name: freight
+        description: "Shipping cost"
+        data_tests:
+          - not_null
+      - name: ship_name
+        description: "Recipient name for shipping"
+      - name: ship_address
+        description: "Shipping street address"
+      - name: ship_city
+        description: "Shipping city"
+      - name: ship_region
+        description: "Shipping region/state"
+      - name: ship_postal_code
+        description: "Shipping postal code"
+      - name: ship_country
+        description: "Shipping country"
+      - name: order_status
+        description: "Derived order status (shipped, overdue, processing)"
+        data_tests:
+          - accepted_values:
+              values: ['shipped', 'overdue', 'processing']
+      - name: days_to_ship
+        description: "Number of days between order date and shipment date"
+      - name: has_negative_freight_flag
+        description: "Flag indicating if freight cost is negative"
+      - name: has_invalid_dates_flag
+        description: "Flag indicating if order date is after shipment date"
+      - name: is_late_shipment_flag
+        description: "Flag indicating if shipment was after required date"
+  
+  - name: stg_crm__order_details
+    description: "Cleaned and enriched order line items with calculated amounts"
+    columns:
+      - name: order_id
+        description: "Foreign key to orders table"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_crm__orders')
+              field: order_id
+      - name: product_id
+        description: "Foreign key to products table"
+        tests:
+          - not_null
+      - name: unit_price
+        description: "Price per unit at time of order"
+        tests:
+          - not_null
+      - name: quantity
+        description: "Quantity ordered"
+        tests:
+          - not_null
+      - name: discount
+        description: "Discount applied (0-1 scale)"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1
+      - name: gross_amount
+        description: "Total amount before discount (unit_price * quantity)"
+      - name: net_amount
+        description: "Total amount after discount"
+      - name: discount_amount
+        description: "Total discount amount"
+      - name: has_invalid_discount_flag
+        description: "Flag for discounts outside valid range (0-1)"
+      - name: has_invalid_quantity_flag
+        description: "Flag for zero or negative quantities"
+      - name: has_negative_price_flag
+        description: "Flag for negative unit prices"
+  
+  - name: stg_crm__customers
+    description: "Cleaned and standardized customer master data"
+    columns:
+      - name: customer_id
+        description: "Primary key for customers"
+        tests:
+          - not_null
+          - unique
+      - name: company_name
+        description: "Official company name"
+        tests:
+          - not_null
+      - name: contact_name
+        description: "Primary contact person name"
+        tests:
+          - not_null
+      - name: contact_title
+        description: "Job title of contact person"
+      - name: address
+        description: "Street address"
+      - name: city
+        description: "City"
+      - name: region
+        description: "State/region/province (Unknown if missing)"
+      - name: postal_code
+        description: "Postal code"
+      - name: country
+        description: "Country"
+      - name: phone
+        description: "Phone number"
+      - name: fax
+        description: "Fax number"
+      - name: contact_category
+        description: "Categorized contact title (Owner, Manager, Representative, Agent, Other)"
+        tests:
+          - accepted_values:
+              values: ['Owner', 'Manager', 'Representative', 'Agent', 'Other']
+      - name: has_missing_phone_flag
+        description: "Flag indicating missing phone number"
+      - name: has_missing_region_flag
+        description: "Flag indicating missing region data"
+
+  - name: stg_crm__employees
+    description: "Cleaned and enriched employee data with derived employment metrics"
+    columns:
+      - name: employee_id
+        description: "Primary key for employees"
+        tests:
+          - not_null
+          - unique
+      - name: last_name
+        description: "Employee's last name"
+        tests:
+          - not_null
+      - name: first_name
+        description: "Employee's first name"
+        tests:
+          - not_null
+      - name: full_name
+        description: "Concatenated full name"
+        tests:
+          - not_null
+      - name: title
+        description: "Job title"
+        tests:
+          - not_null
+      - name: title_of_courtesy
+        description: "Courtesy title (Mr., Ms., Dr., etc.)"
+      - name: birth_date
+        description: "Date of birth"
+        tests:
+          - not_null
+      - name: hire_date
+        description: "Date when employee was hired"
+        tests:
+          - not_null
+      - name: address
+        description: "Street address"
+      - name: city
+        description: "City"
+      - name: region
+        description: "State/region/province (Unknown if missing)"
+      - name: postal_code
+        description: "Postal code"
+      - name: country
+        description: "Country"
+      - name: home_phone
+        description: "Home phone number"
+      - name: extension
+        description: "Phone extension"
+      - name: notes
+        description: "Notes about the employee"
+      - name: reports_to
+        description: "Manager's employee_id"
+        tests:
+          - relationships:
+              to: ref('stg_crm__employees')
+              field: employee_id
+      - name: employment_level
+        description: "Categorized employment level (Management, Staff, Other)"
+        tests:
+          - accepted_values:
+              values: ['Management', 'Staff', 'Other']
+      - name: current_age
+        description: "Current age in years"
+      - name: years_of_service
+        description: "Years of service with the company"
+      - name: is_top_level_manager_flag
+        description: "Flag for employees who don't report to anyone (top management)"
+      - name: has_missing_region_flag
+        description: "Flag indicating missing region data"
+      - name: has_missing_phone_flag
+        description: "Flag indicating missing home phone number"
+
+  - name: stg_crm__products
+    description: "Cleaned and enriched product data with inventory analytics"
+    columns:
+      - name: product_id
+        description: "Primary key for products"
+        tests:
+          - not_null
+          - unique
+      - name: product_name
+        description: "Name of the product"
+        tests:
+          - not_null
+      - name: supplier_id
+        description: "Foreign key to suppliers table"
+      - name: category_id
+        description: "Foreign key to categories table"
+      - name: quantity_per_unit
+        description: "Packaging description"
+      - name: unit_price
+        description: "Price per unit in decimal format"
+        tests:
+          - not_null
+      - name: units_in_stock
+        description: "Current inventory level"
+        tests:
+          - not_null
+      - name: units_on_order
+        description: "Units on order from supplier"
+        tests:
+          - not_null
+      - name: reorder_level
+        description: "Minimum stock level before reordering"
+        tests:
+          - not_null
+      - name: discontinued
+        description: "1 if discontinued, 0 if active"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+      - name: total_available_units
+        description: "Sum of units in stock and on order"
+      - name: units_above_reorder_level
+        description: "Difference between current stock and reorder level"
+      - name: inventory_status
+        description: "Inventory status (Out of Stock, Low Stock, In Stock)"
+        tests:
+          - accepted_values:
+              values: ['Out of Stock', 'Low Stock', 'In Stock']
+      - name: product_status
+        description: "Product status (Active, Discontinued)"
+        tests:
+          - accepted_values:
+              values: ['Active', 'Discontinued']
+      - name: has_invalid_price_flag
+        description: "Flag for zero or negative unit prices"
+      - name: has_negative_stock_flag
+        description: "Flag for negative units in stock"
+      - name: has_negative_order_flag
+        description: "Flag for negative units on order"
+      - name: has_negative_reorder_flag
+        description: "Flag for negative reorder levels"
+
+  - name: stg_crm__categories
+    description: "Cleaned and enriched product category data with business classifications"
+    columns:
+      - name: category_id
+        description: "Primary key for categories"
+        tests:
+          - not_null
+          - unique
+      - name: category_name
+        description: "Name of the product category"
+        tests:
+          - not_null
+      - name: description
+        description: "Description of the category and products it contains"
+      - name: perishability_category
+        description: "Business classification based on product shelf life (Perishable, Highly Perishable, Shelf Stable)"
+        tests:
+          - accepted_values:
+              values: ['Perishable', 'Highly Perishable', 'Shelf Stable']
+      - name: has_missing_description_flag
+        description: "Flag indicating missing category description"
+
+  - name: stg_crm__shippers
+    description: "Cleaned shipping company data"
+    columns:
+      - name: shipper_id
+        description: "Primary key for shippers"
+        tests:
+          - not_null
+          - unique
+      - name: company_name
+        description: "Name of the shipping company"
+        tests:
+          - not_null
+      - name: phone
+        description: "Contact phone number for the shipper"
+      - name: has_missing_phone_flag
+        description: "Flag indicating missing phone number"

@@ -1,0 +1,233 @@
+version: 2
+
+sources:
+  - name: northwind
+    description: "Northwind database source"
+    database: northwind
+    schema: public
+    tables:
+      - name: new_table_seed
+        description: "Seed table containing customer name data"
+        columns:
+          - name: id
+            description: "Primary key identifier"
+          - name: col1
+            description: "First name column"
+          - name: col2
+            description: "Last name column"
+          - name: date
+            description: "Date associated with the record"
+
+      - name: orders
+        description: "Customer orders table"
+        loaded_at_field: order_date
+        columns:
+          - name: order_id
+            description: "Primary key identifier for orders"
+          - name: customer_id
+            description: "Foreign key referencing customers"
+          - name: employee_id
+            description: "Foreign key referencing employees"
+          - name: order_date
+            description: "Date when order was placed"
+          - name: required_date
+            description: "Date when order is required by customer"
+          - name: shipped_date
+            description: "Date when order was shipped"
+          - name: ship_via
+            description: "Foreign key referencing shippers"
+          - name: freight
+            description: "Shipping cost"
+          - name: ship_name
+            description: "Recipient name for shipping"
+          - name: ship_address
+            description: "Shipping street address"
+          - name: ship_city
+            description: "Shipping city"
+          - name: ship_region
+            description: "Shipping region/state"
+          - name: ship_postal_code
+            description: "Shipping postal code"
+          - name: ship_country
+            description: "Shipping country"
+      
+      - name: order_details
+        description: "Individual line items for each order"
+        loaded_at_field: null  # This table doesn't have a timestamp column
+        columns:
+          - name: order_id
+            description: "Foreign key to orders table"
+            tests:
+              - not_null
+          - name: product_id
+            description: "Foreign key to products table"
+            tests:
+              - not_null
+          - name: unit_price
+            description: "Price per unit at time of order"
+            tests:
+              - not_null
+          - name: quantity
+            description: "Quantity ordered"
+            tests:
+              - not_null
+          - name: discount
+            description: "Discount applied (0-1 scale)"
+      
+      - name: customers
+        description: "Customer master data with company and contact information"
+        loaded_at_field: null
+        columns:
+          - name: customer_id
+            description: "Primary key for customers table"
+            tests:
+              - not_null
+              - unique
+          - name: company_name
+            description: "Official company name"
+            tests:
+              - not_null
+          - name: contact_name
+            description: "Primary contact person name"
+            tests:
+              - not_null
+          - name: contact_title
+            description: "Job title of contact person"
+          - name: address
+            description: "Street address"
+          - name: city
+            description: "City"
+          - name: region
+            description: "State/region/province"
+          - name: postal_code
+            description: "Postal code"
+          - name: country
+            description: "Country"
+          - name: phone
+            description: "Phone number"
+          - name: fax
+            description: "Fax number"
+      
+      - name: employees
+        description: "Employee master data with personal and employment information"
+        loaded_at_field: hire_date
+        columns:
+          - name: employee_id
+            description: "Primary key for employees table"
+            tests:
+              - not_null
+              - unique
+          - name: last_name
+            description: "Employee's last name"
+            tests:
+              - not_null
+          - name: first_name
+            description: "Employee's first name"
+            tests:
+              - not_null
+          - name: title
+            description: "Job title"
+            tests:
+              - not_null
+          - name: title_of_courtesy
+            description: "Courtesy title (Mr., Ms., Dr., etc.)"
+          - name: birth_date
+            description: "Date of birth"
+            tests:
+              - not_null
+          - name: hire_date
+            description: "Date when employee was hired"
+            tests:
+              - not_null
+          - name: address
+            description: "Street address"
+          - name: city
+            description: "City"
+          - name: region
+            description: "State/region/province"
+          - name: postal_code
+            description: "Postal code"
+          - name: country
+            description: "Country"
+          - name: home_phone
+            description: "Home phone number"
+          - name: extension
+            description: "Phone extension"
+          - name: notes
+            description: "Notes about the employee"
+          - name: reports_to
+            description: "Manager's employee_id (self-referencing foreign key)"
+
+      - name: products
+        description: "Product master data with inventory and pricing information"
+        loaded_at_field: null
+        columns:
+          - name: product_id
+            description: "Primary key for products table"
+            tests:
+              - not_null
+              - unique
+          - name: product_name
+            description: "Name of the product"
+            tests:
+              - not_null
+          - name: supplier_id
+            description: "Foreign key to suppliers table"
+          - name: category_id
+            description: "Foreign key to categories table"
+          - name: quantity_per_unit
+            description: "Packaging description (e.g., '24 - 12 oz bottles')"
+          - name: unit_price
+            description: "Price per unit"
+            tests:
+              - not_null
+          - name: units_in_stock
+            description: "Current inventory level"
+            tests:
+              - not_null
+          - name: units_on_order
+            description: "Units on order from supplier"
+            tests:
+              - not_null
+          - name: reorder_level
+            description: "Minimum stock level before reordering"
+            tests:
+              - not_null
+          - name: discontinued
+            description: "1 if product is discontinued, 0 if active"
+            tests:
+              - not_null
+
+      - name: categories
+        description: "Product category classification data"
+        loaded_at_field: null  # Static reference data
+        columns:
+          - name: category_id
+            description: "Primary key for categories table"
+            tests:
+              - not_null
+              - unique
+          - name: category_name
+            description: "Name of the product category"
+            tests:
+              - not_null
+          - name: description
+            description: "Description of the category and products it contains"
+          - name: picture
+            description: "Binary image data for the category"
+
+      - name: shippers
+        description: "Shipping company master data"
+        loaded_at_field: null  # Static reference data
+        columns:
+          - name: shipper_id
+            description: "Primary key for shippers table"
+            tests:
+              - not_null
+              - unique
+          - name: company_name
+            description: "Name of the shipping company"
+            tests:
+              - not_null
+          - name: phone
+            description: "Contact phone number for the shipper"
