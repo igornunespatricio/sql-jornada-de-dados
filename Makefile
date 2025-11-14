@@ -56,7 +56,7 @@ docs-generate:
 
 docs-serve:
 	@echo "Serving dbt documentation"
-	cd northwind_dbt/northwind && poetry run dbt docs serve
+	cd northwind_dbt/northwind && poetry run dbt docs serve --port 8081
 
 debug-dbt:
 	@echo "Running dbt debug"
